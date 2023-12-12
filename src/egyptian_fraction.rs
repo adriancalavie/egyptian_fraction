@@ -59,17 +59,136 @@ fn fold_unitary_fractions(fractions: Vec<Fraction>) -> Vec<Fraction> {
 }
 
 pub(crate) fn egyptian_fraction(fraction: Fraction) -> Option<Vec<Fraction>> {
-    compute_egyptian_fraction(fraction).map(fold_unitary_fractions)
+    compute_egyptian_fraction(fraction)
+        .map(fold_unitary_fractions)
+        .filter(|f| !f.is_empty())
+}
+
+pub(crate) fn to_egyptian_fraction_notation(fraction: Fraction) -> String {
+    if let Some(fractions) = egyptian_fraction(fraction) {
+        fractions
+            .iter()
+            .map(|f| f.to_string())
+            .collect::<Vec<_>>()
+            .join(" + ")
+    } else {
+        String::from("Egyptian Fraction couldn't be computed")
+    }
 }
 
 pub(crate) fn print_egyptian_fraction(fraction: Fraction) {
-    if let Some(fractions) = egyptian_fraction(fraction) {
-        for (i, f) in fractions.iter().enumerate() {
-            if i < fractions.len() - 1 {
-                print!("{} + ", f);
-            } else {
-                print!("{}", f);
-            }
-        }
+    println!("{} = {}", fraction, to_egyptian_fraction_notation(fraction));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_fold_unitary_fractions_empty() {
+        let fractions = vec![];
+        let result = fold_unitary_fractions(fractions);
+        assert!(result.is_empty());
+    }
+
+    #[test]
+    fn test_fold_unitary_fractions_only_unitary() {
+        let fractions = vec![
+            Fraction {
+                numerator: 1,
+                denominator: 1,
+            },
+            Fraction {
+                numerator: 1,
+                denominator: 1,
+            },
+        ];
+        let expected = vec![Fraction {
+            numerator: 2,
+            denominator: 1,
+        }];
+        let result = fold_unitary_fractions(fractions);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_fold_unitary_fractions_mixed() {
+        let fractions = vec![
+            Fraction {
+                numerator: 1,
+                denominator: 1,
+            },
+            Fraction {
+                numerator: 1,
+                denominator: 2,
+            },
+            Fraction {
+                numerator: 1,
+                denominator: 1,
+            },
+            Fraction {
+                numerator: 1,
+                denominator: 3,
+            },
+        ];
+        let expected = vec![
+            Fraction {
+                numerator: 2,
+                denominator: 1,
+            },
+            Fraction {
+                numerator: 1,
+                denominator: 2,
+            },
+            Fraction {
+                numerator: 1,
+                denominator: 3,
+            },
+        ];
+        let result = fold_unitary_fractions(fractions);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_egyptian_fraction_valid() {
+        let fraction = Fraction {
+            numerator: 2,
+            denominator: 3,
+        };
+        let result = egyptian_fraction(fraction);
+        assert!(result.is_some());
+
+        // check result is 1/2 and 1/6
+        let expected = vec![
+            Fraction {
+                numerator: 1,
+                denominator: 2,
+            },
+            Fraction {
+                numerator: 1,
+                denominator: 6,
+            },
+        ];
+        assert_eq!(result.unwrap(), expected);
+    }
+
+    #[test]
+    fn test_egyptian_fraction_invalid() {
+        let fraction = Fraction {
+            numerator: 0,
+            denominator: 1,
+        };
+        let result = egyptian_fraction(fraction);
+        println!("{:?}", result);
+        assert!(result.is_none());
+    }
+
+    #[test]
+    fn test_to_egyptian_fraction() {
+        let fraction = Fraction {
+            numerator: 2,
+            denominator: 5,
+        };
+        assert_eq!(to_egyptian_fraction_notation(fraction), "1/3 + 1/15");
     }
 }

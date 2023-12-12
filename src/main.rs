@@ -1,8 +1,8 @@
 use crate::{egyptian_fraction::print_egyptian_fraction, fraction::Fraction};
 
-mod egyptian_fraction;
-mod fraction;
+pub mod egyptian_fraction;
+pub mod fraction;
 
 fn main() {
-    print_egyptian_fraction(Fraction::new(5, 121))
+    print_egyptian_fraction(Fraction::new(0, 1))
 }

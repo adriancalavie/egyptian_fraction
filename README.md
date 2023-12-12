@@ -22,7 +22,7 @@ let egyptian_representation = egyptian_fraction(fraction);
 // You can also pretty print it:
 print_egyptian_fraction(fraction);
 // this prints:
-// 1/25 + 1/757 + 1/763309 + 1/873960180913 + 1/1527612795642093418846225
+// 5/121 = 1/25 + 1/757 + 1/763309 + 1/873960180913 + 1/1527612795642093418846225
 ```
 
 See `main.rs` and `egyptian_fraction.rs` for more
